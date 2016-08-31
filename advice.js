@@ -1,41 +1,33 @@
-var meld = require('meld');
-var calculadora = require('./calculadora');
+var advice = {
+    cache : {},
+    logearResultado: function(resultado) {
+        console.log('El resultado es: ' + resultado);
+    },
+    cachear: function(methodCall) {
+        var cacheKey, result;
+        var cache = advice.cache;
 
-function logearResultado(resultado){
-    console.log('El resultado es: ' + resultado);
-}
+        cacheKey = methodCall.method + '(' + methodCall.args.join()+ ')';
 
-var cache = {};
-function cachear(methodCall){
-    var cacheKey, result;
+        if(cacheKey in cache) {
+            result = cache[cacheKey];
+        } else {
+            result = methodCall.proceed();
+            cache[cacheKey] = result;
+        }
 
-    cacheKey = methodCall.method + '(' + methodCall.args.join()+ ')';
+        return result;
+    },
+    cronometrar: function(methodCall) {
+        var start = new Date().getTime();
 
-    if(cacheKey in cache) {
-        result = cache[cacheKey];
-    } else {
-        result = methodCall.proceed();
-        cache[cacheKey] = result;
+        var finalResult = methodCall.proceed();
+
+        var end = new Date().getTime();
+        var time = end - start;
+        console.log(methodCall.method + '(' + methodCall.args.join()+ ') tardó: ' + time + ' ms');
+        return finalResult;
     }
+};
 
-    return result;
-}
-
-function cronometrar(methodCall){
-    var start = new Date().getTime();
-
-    var finalResult = methodCall.proceed();
-
-    var end = new Date().getTime();
-    var time = end - start;
-    console.log(methodCall.method + '(' + methodCall.args.join()+ ') tardó: ' + time + ' ms');
-    return finalResult;
-}
-
-meld.after(calculadora, /^/, logearResultado);
-
-meld.around(calculadora, /^/, cachear);
-
-meld.around(calculadora, /^/, cronometrar);
-
-module.exports.cache = cache;
+module.exports = advice;
