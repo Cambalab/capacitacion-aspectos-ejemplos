@@ -27,6 +27,12 @@ var advice = {
         var time = end - start;
         console.log(methodCall.method + '(' + methodCall.args.join()+ ') tardó: ' + time + ' ms');
         return finalResult;
+    },
+    chequearSilosArgumentosSonEnterosPositivos: function(){
+        for(var arg = 0; arg < arguments.length; ++ arg){
+            if (arguments[arg] < 0)
+                throw new Error("Esta funcion solo acepta enteros positivos como parámetros");
+        }
     }
 };
 
