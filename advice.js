@@ -1,8 +1,8 @@
 var meld = require('meld');
-calculadora = require('./calculadora');
+var calculadora = require('./calculadora');
 
 function logearResultado(resultado){
-    console.log('El resultado es: ' + result);
+    console.log('El resultado es: ' + resultado);
 }
 
 var cache = {};
@@ -24,14 +24,12 @@ function cachear(methodCall){
 function cronometrar(methodCall){
     var start = new Date().getTime();
 
-    for (i = 0; i < 50000; ++i) {
-        result = methodCall.proceed();
-    }
+    var finalResult = methodCall.proceed();
 
     var end = new Date().getTime();
     var time = end - start;
     console.log(methodCall.method + '(' + methodCall.args.join()+ ') tardó: ' + time + ' ms');
-    return result;
+    return finalResult;
 }
 
 meld.after(calculadora, /^/, logearResultado);
